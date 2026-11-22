@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Vision-Based Fall Detection</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🛡️
+        </div>
+
+        <div>
+            <h2>FALL AI</h2>
+
+            <span>
+                Elderly Safety
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- SINGLE NAVIGATION -->
+    <nav>
+
+        <div class="nav-item active"
+             onclick="showSection('dashboard', this)">
+
+            <span>📊</span>
+            <span>Dashboard</span>
+
+        </div>
+
+
+        <div class="nav-item"
+             onclick="showSection('monitoring', this)">
+
+            <span>📹</span>
+            <span>Live Monitoring</span>
+
+        </div>
+
+
+        <div class="nav-item"
+             onclick="showSection('events', this)">
+
+            <span>🚨</span>
+            <span>Fall Events</span>
+
+        </div>
+
+
+        <div class="nav-item"
+             onclick="showSection('system', this)">
+
+            <span>⚙️</span>
+            <span>System Information</span>
+
+        </div>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <div class="privacy-small">
+            🔒 Local Processing
+        </div>
+
+        <p>
+            AI monitoring system
+        </p>
+
+    </div>
+
+</aside>
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+<main class="main" id="dashboard">
+
+    <!-- =====================================================
+         EMERGENCY ALERT BANNER
+    ====================================================== -->
+
+    <div id="emergencyAlert" class="emergency-alert" role="alert" aria-live="assertive" hidden>
+
+        <div class="emergency-alert-icon">🚨</div>
+
+        <div class="emergency-alert-content">
+            <strong id="alertTitle">EMERGENCY ALERT</strong>
+            <p id="alertMessage">Fall detected. Please check the person immediately.</p>
+            <small id="alertDetails"></small>
+        </div>
+
+        <button id="acknowledgeAlert" class="acknowledge-alert" type="button"
+                onclick="acknowledgeEmergencyAlert()">
+            ✓ Acknowledge
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <div>
+
+            <div class="page-label">
+                AI MONITORING PLATFORM
+            </div>
+
+            <h1>
+                Vision-Based Fall Detection
+            </h1>
+
+            <p>
+                Real-time elderly safety monitoring using
+                computer vision and AI
+            </p>
+
+        </div>
+
+
+        <div class="system-status">
+
+            <span class="status-dot"></span>
+
+            SYSTEM ACTIVE
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <section class="stats-grid page-section"
+             id="dashboardStats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📹
+            </div>
+
+            <div>
+
+                <span>
+                    Camera Status
+                </span>
+
+                <h3 id="camera">
+                    CONNECTING...
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👤
+            </div>
+
+            <div>
+
+                <span>
+                    Person Detection
+                </span>
+
+                <h3 id="person">
+                    WAITING...
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🧠
+            </div>
+
+            <div>
+
+                <span>
+                    Fall Confidence
+                </span>
+
+                <h3 id="confidence">
+                    0%
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⚡
+            </div>
+
+            <div>
+
+                <span>
+                    Processing FPS
+                </span>
+
+                <h3 id="fps">
+                    0
+                </h3>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LIVE MONITORING
+    ====================================================== -->
+
+    <section class="monitor-grid page-section"
+             id="monitoring">
+
+
+        <!-- CAMERA PANEL -->
+
+        <div class="panel camera-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="section-label">
+                        LIVE MONITORING
+                    </span>
+
+                    <h2>
+                        AI Camera Feed
+                    </h2>
+
+                </div>
+
+
+                <div class="live-badge">
+
+                    <span></span>
+
+                    LIVE
+
+                </div>
+
+            </div>
+
+
+            <div class="camera-container">
+
+                <img
+                    src="{{ url_for('video_feed') }}"
+                    id="video"
+                    alt="Live AI Camera Feed"
+                >
+
+
+                <div class="camera-overlay">
+
+                    <span>
+                        YOLO11 POSE
+                    </span>
+
+                    <span>
+                        AI ACTIVE
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="camera-info">
+
+                <div>
+
+                    <span>
+                        MODEL
+                    </span>
+
+                    <strong>
+                        YOLO11n Pose
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        PROCESSING
+                    </span>
+
+                    <strong>
+                        REAL-TIME
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        PRIVACY
+                    </span>
+
+                    <strong>
+                        LOCAL
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FALL STATUS PANEL -->
+
+        <div class="panel status-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SAFETY MONITOR
+                    </span>
+
+                    <h2>
+                        Fall Detection
+                    </h2>
+
+                </div>
+
+
+                <div class="shield">
+                    🛡️
+                </div>
+
+            </div>
+
+
+            <div id="fallStatus"
+                 class="fall-status normal">
+
+                <div class="status-symbol">
+                    ✓
+                </div>
+
+                <div>
+
+                    <strong>
+                        NORMAL
+                    </strong>
+
+                    <span>
+                        No fall detected
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIDENCE -->
+
+            <div class="confidence-section">
+
+                <div class="confidence-header">
+
+                    <span>
+                        Fall Confidence
+                    </span>
+
+                    <strong id="confidence2">
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div id="confidenceBar"
+                         class="progress-bar"
+                         style="width:0%">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- POSTURE -->
+
+            <div class="detail-row">
+
+                <span>
+                    Current Posture
+                </span>
+
+                <strong id="posture">
+                    UNKNOWN
+                </strong>
+
+            </div>
+
+
+            <!-- LAST EVENT -->
+
+            <div class="detail-row">
+
+                <span>
+                    Last Fall Event
+                </span>
+
+                <strong id="lastEvent">
+                    None
+                </strong>
+
+            </div>
+
+
+            <!-- TIME -->
+
+            <div class="detail-row">
+
+                <span>
+                    Current Time
+                </span>
+
+                <strong id="time">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="emergency-note">
+
+                <span>
+                    🚨
+                </span>
+
+                <p>
+                    A confirmed fall automatically
+                    triggers an emergency alert and
+                    saves visual evidence.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         EVENT STATISTICS
+    ====================================================== -->
+
+    <section class="event-stats">
+
+
+        <div class="mini-card">
+
+            <span>
+                TOTAL FALL EVENTS
+            </span>
+
+            <strong id="totalEvents">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="mini-card">
+
+            <span>
+                SYSTEM UPTIME
+            </span>
+
+            <strong id="uptime">
+                00:00:00
+            </strong>
+
+        </div>
+
+
+        <div class="mini-card">
+
+            <span>
+                AI ENGINE
+            </span>
+
+            <strong>
+                YOLO11 POSE
+            </strong>
+
+        </div>
+
+
+        <div class="mini-card">
+
+            <span>
+                DETECTION MODE
+            </span>
+
+            <strong>
+                REAL-TIME
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FALL EVENTS
+    ====================================================== -->
+
+    <section class="panel events-panel page-section"
+             id="events">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span class="section-label">
+                    INCIDENT HISTORY
+                </span>
+
+                <h2>
+                    Recent Fall Events
+                </h2>
+
+            </div>
+
+
+            <div class="event-count">
+
+                <span id="eventCount">
+                    0
+                </span>
+
+                EVENTS
+
+            </div>
+
+        </div>
+
+
+        <div id="eventsContainer"
+             class="events-container">
+
+            <div class="no-events">
+
+                <div>
+                    ✓
+                </div>
+
+                <strong>
+                    No fall events detected
+                </strong>
+
+                <span>
+                    The system is continuously monitoring.
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SYSTEM INFORMATION
+    ====================================================== -->
+
+    <section class="panel system-panel page-section"
+             id="system">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span class="section-label">
+                    SYSTEM INFORMATION
+                </span>
+
+                <h2>
+                    AI Detection Configuration
+                </h2>
+
+            </div>
+
+
+            <div class="shield">
+                ⚙️
+            </div>
+
+        </div>
+
+
+        <div class="system-grid">
+
+
+            <div class="system-item">
+
+                <span>
+                    AI MODEL
+                </span>
+
+                <strong>
+                    YOLO11n Pose
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    COMPUTER VISION
+                </span>
+
+                <strong>
+                    OpenCV
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    DETECTION TYPE
+                </span>
+
+                <strong>
+                    Pose Estimation
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    FALL THRESHOLD
+                </span>
+
+                <strong>
+                    70%
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    CONFIRMATION TIME
+                </span>
+
+                <strong>
+                    2 Seconds
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    ALARM COOLDOWN
+                </span>
+
+                <strong>
+                    10 Seconds
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    PROCESSING MODE
+                </span>
+
+                <strong>
+                    Real-Time
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    DATA STORAGE
+                </span>
+
+                <strong>
+                    Local
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    VIDEO SOURCE
+                </span>
+
+                <strong>
+                    Webcam
+                </strong>
+
+            </div>
+
+
+            <div class="system-item">
+
+                <span>
+                    EVIDENCE STORAGE
+                </span>
+
+                <strong>
+                    data/fall_events
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- DETECTION PIPELINE -->
+
+        <div class="architecture">
+
+            <h3>
+                Detection Pipeline
+            </h3>
+
+
+            <div class="pipeline">
+
+                <div>
+                    📹
+                    <span>Camera</span>
+                </div>
+
+                <div class="arrow">
+                    →
+                </div>
+
+                <div>
+                    🖼️
+                    <span>Frame</span>
+                </div>
+
+                <div class="arrow">
+                    →
+                </div>
+
+                <div>
+                    🧠
+                    <span>YOLO11 Pose</span>
+                </div>
+
+                <div class="arrow">
+                    →
+                </div>
+
+                <div>
+                    📐
+                    <span>Keypoints</span>
+                </div>
+
+                <div class="arrow">
+                    →
+                </div>
+
+                <div>
+                    🚨
+                    <span>Fall Detection</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MODULE 1
+    ====================================================== -->
+
+    <section class="panel module-panel page-section"
+             id="module1">
+
+        <div class="module-header">
+
+            <div class="module-number">
+                MODULE 01
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    IMAGE PROCESSING
+                </span>
+
+                <h2>
+                    Image Enhancement
+                </h2>
+
+                <p>
+                    Prepares clean and optimized video frames
+                    for accurate downstream detection.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="module-content">
+
+            <div class="module-card">
+                <span>INPUT</span>
+                <strong>Raw Camera Frame</strong>
+            </div>
+
+            <div class="module-arrow">→</div>
+
+            <div class="module-card">
+                <span>PROCESSING</span>
+                <strong>Noise Removal</strong>
+            </div>
+
+            <div class="module-arrow">→</div>
+
+            <div class="module-card">
+                <span>ENHANCEMENT</span>
+                <strong>Brightness & Contrast</strong>
+            </div>
+
+            <div class="module-arrow">→</div>
+
+            <div class="module-card">
+                <span>OUTPUT</span>
+                <strong>Enhanced Frame</strong>
+            </div>
+
+        </div>
+
+
+        <div class="tech-list">
+
+            <span>Gaussian Blur</span>
+            <span>Median Filtering</span>
+            <span>Histogram Equalization</span>
+            <span>Contrast Enhancement</span>
+            <span>Frame Resizing</span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MODULE 2
+    ====================================================== -->
+
+    <section class="panel module-panel page-section"
+             id="module2">
+
+        <div class="module-header">
+
+            <div class="module-number">
+                MODULE 02
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    COMPUTER VISION
+                </span>
+
+                <h2>
+                    Pose Feature Extraction
+                </h2>
+
+                <p>
+                    Extracts human body keypoints and geometric
+                    features from video frames.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="module-content">
+
+            <div class="module-card">
+                <span>INPUT</span>
+                <strong>Enhanced Frame</strong>
+            </div>
+
+            <div class="module-arrow">→</div>
+
+            <div class="module-card">
+                <span>POSE MODEL</span>
+                <strong>YOLO Pose</strong>
+            </div>
+
+            <div class="module-arrow">→</div>
+
+            <div class="module-card">
+                <span>KEYPOINTS</span>
+                <strong>Human Body Points</strong>
+            </div>
+
+            <div class="module-arrow">→</div>
+
+            <div class="module-card">
+                <span>FEATURES</span>
+                <strong>Body Geometry</strong>
+            </div>
+
+        </div>
+
+
+        <div class="tech-list">
+
+            <span>Pose Estimation</span>
+            <span>Body Keypoints</span>
+            <span>Bounding Box</span>
+            <span>Body Orientation</span>
+            <span>Spatial Features</span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MODULE 3
+    ====================================================== -->
+
+    <section class="panel module-panel page-section"
+             id="module3">
+
+        <div class="module-header">
+
+            <div class="module-number">
+                MODULE 03
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    AI CLASSIFICATION
+                </span>
+
+                <h2>
+                    Activity / Fall Classification
+                </h2>
+
+                <p>
+                    Analyzes pose features to determine the
+                    person's activity and identify possible falls.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="activity-grid">
+
+
+            <div class="activity-card">
+
+                <div>🧍</div>
+
+                <strong>
+                    Standing
+                </strong>
+
+                <span>
+                    Normal Activity
+                </span>
+
+            </div>
+
+
+            <div class="activity-card">
+
+                <div>🚶</div>
+
+                <strong>
+                    Walking
+                </strong>
+
+                <span>
+                    Normal Activity
+                </span>
+
+            </div>
+
+
+            <div class="activity-card">
+
+                <div>🪑</div>
+
+                <strong>
+                    Sitting
+                </strong>
+
+                <span>
+                    Normal Activity
+                </span>
+
+            </div>
+
+
+            <div class="activity-card">
+
+                <div>⚠️</div>
+
+                <strong>
+                    Possible Fall
+                </strong>
+
+                <span>
+                    Requires Monitoring
+                </span>
+
+            </div>
+
+
+            <div class="activity-card danger-card">
+
+                <div>🚨</div>
+
+                <strong>
+                    Fall Detected
+                </strong>
+
+                <span>
+                    Emergency Condition
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="classification-flow">
+
+            <span>
+                Pose Features
+            </span>
+
+            <b>→</b>
+
+            <span>
+                Activity Analysis
+            </span>
+
+            <b>→</b>
+
+            <span>
+                Fall Probability
+            </span>
+
+            <b>→</b>
+
+            <span>
+                Classification
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MODULE 4
+    ====================================================== -->
+
+    <section class="panel module-panel page-section"
+             id="module4">
+
+        <div class="module-header">
+
+            <div class="module-number">
+                MODULE 04
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    MONITORING INTERFACE
+                </span>
+
+                <h2>
+                    User Interface Design
+                </h2>
+
+                <p>
+                    Provides a real-time dashboard for monitoring
+                    camera status, detection results and incidents.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ui-feature-grid">
+
+
+            <div class="ui-feature">
+
+                <span>📹</span>
+
+                <strong>
+                    Live Camera
+                </strong>
+
+                <p>
+                    Real-time video monitoring
+                </p>
+
+            </div>
+
+
+            <div class="ui-feature">
+
+                <span>📊</span>
+
+                <strong>
+                    Detection Statistics
+                </strong>
+
+                <p>
+                    Confidence and FPS information
+                </p>
+
+            </div>
+
+
+            <div class="ui-feature">
+
+                <span>🚨</span>
+
+                <strong>
+                    Fall Status
+                </strong>
+
+                <p>
+                    Instant safety condition
+                </p>
+
+            </div>
+
+
+            <div class="ui-feature">
+
+                <span>📁</span>
+
+                <strong>
+                    Event History
+                </strong>
+
+                <p>
+                    Recorded fall incidents
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MODULE 5
+    ====================================================== -->
+
+    <section class="panel module-panel page-section"
+             id="module5">
+
+        <div class="module-header">
+
+            <div class="module-number">
+                MODULE 05
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    SAFETY RESPONSE
+                </span>
+
+                <h2>
+                    Emergency Alert Module
+                </h2>
+
+                <p>
+                    Responds to confirmed fall events by generating
+                    an emergency notification and preserving evidence.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="alert-flow">
+
+
+            <div class="alert-step">
+
+                <span>1</span>
+
+                <strong>
+                    Fall Detected
+                </strong>
+
+                <small>
+                    AI identifies abnormal posture
+                </small>
+
+            </div>
+
+
+            <div class="alert-arrow">
+                →
+            </div>
+
+
+            <div class="alert-step">
+
+                <span>2</span>
+
+                <strong>
+                    Fall Confirmed
+                </strong>
+
+                <small>
+                    System verifies the event
+                </small>
+
+            </div>
+
+
+            <div class="alert-arrow">
+                →
+            </div>
+
+
+            <div class="alert-step">
+
+                <span>3</span>
+
+                <strong>
+                    Evidence Saved
+                </strong>
+
+                <small>
+                    Incident frame is stored
+                </small>
+
+            </div>
+
+
+            <div class="alert-arrow">
+                →
+            </div>
+
+
+            <div class="alert-step emergency-step">
+
+                <span>4</span>
+
+                <strong>
+                    Emergency Alert
+                </strong>
+
+                <small>
+                    Notification is triggered
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="emergency-status">
+
+            <span class="status-dot"></span>
+
+            Emergency monitoring system ready
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <span>
+            Vision-Based Fall Detection System
+        </span>
+
+        <span>
+            AI-powered elderly safety monitoring
+        </span>
+
+    </footer>
+
+
+</main>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+
+/* =========================================================
+   SIDEBAR NAVIGATION
+========================================================= */
+
+function showSection(sectionId, clickedItem) {
+
+    const target =
+        document.getElementById(sectionId);
+
+
+    if (!target) {
+
+        console.error(
+            "Section not found:",
+            sectionId
+        );
+
+        return;
+
+    }
+
+
+    /* Remove active class */
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(function(item) {
+
+            item.classList.remove("active");
+
+        });
+
+
+    /* Add active class */
+
+    if (clickedItem) {
+
+        clickedItem.classList.add("active");
+
+    }
+
+
+    /* Scroll to selected section */
+
+    target.scrollIntoView({
+
+        behavior: "smooth",
+
+        block: "start"
+
+    });
+
+}
+
+
+
+/* =========================================================
+   UPDATE SYSTEM STATUS
+========================================================= */
+
+async function updateStatus() {
+
+    try {
+
+        const response =
+            await fetch("/api/status");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Status API returned " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /* Camera */
+
+        const cameraElement =
+            document.getElementById("camera");
+
+        if (cameraElement) {
+
+            cameraElement.innerText =
+                data.camera || "UNKNOWN";
+
+        }
+
+
+        /* Person */
+
+        const personElement =
+            document.getElementById("person");
+
+        if (personElement) {
+
+            personElement.innerText =
+                data.person_detected
+                ? `${data.person_count || 0} DETECTED`
+                : "NOT DETECTED";
+
+        }
+
+
+        /* Confidence */
+
+        const confidence =
+            Number(data.confidence || 0);
+
+
+        const confidenceElement =
+            document.getElementById("confidence");
+
+
+        if (confidenceElement) {
+
+            confidenceElement.innerText =
+                confidence.toFixed(1) + "%";
+
+        }
+
+
+        const confidence2Element =
+            document.getElementById("confidence2");
+
+
+        if (confidence2Element) {
+
+            confidence2Element.innerText =
+                confidence.toFixed(1) + "%";
+
+        }
+
+
+        const confidenceBar =
+            document.getElementById("confidenceBar");
+
+
+        if (confidenceBar) {
+
+            confidenceBar.style.width =
+                Math.min(
+                    Math.max(confidence, 0),
+                    100
+                ) + "%";
+
+        }
+
+
+        /* FPS */
+
+        const fpsElement =
+            document.getElementById("fps");
+
+
+        if (fpsElement) {
+
+            fpsElement.innerText =
+                data.fps || "0";
+
+        }
+
+
+        /* Posture */
+
+        const postureElement =
+            document.getElementById("posture");
+
+
+        if (postureElement) {
+
+            postureElement.innerText =
+                data.posture || "UNKNOWN";
+
+        }
+
+
+        /* Last event */
+
+        const lastEventElement =
+            document.getElementById("lastEvent");
+
+
+        if (lastEventElement) {
+
+            lastEventElement.innerText =
+                data.last_event || "None";
+
+        }
+
+
+        /* Total fall events */
+
+        const totalEventsElement =
+            document.getElementById("totalEvents");
+
+
+        if (totalEventsElement) {
+
+            totalEventsElement.innerText =
+                data.fall_events || 0;
+
+        }
+
+
+        /* Uptime */
+
+        const seconds =
+            Number(data.uptime || 0);
+
+
+        const uptimeElement =
+            document.getElementById("uptime");
+
+
+        if (uptimeElement) {
+
+            uptimeElement.innerText =
+                formatUptime(seconds);
+
+        }
+
+
+        /* Fall status */
+
+        updateFallStatus(
+            data.fall_status || "NORMAL"
+        );
+
+        /* Emergency alert message */
+
+        updateEmergencyAlert(data);
+
+    }
+
+
+    catch(error) {
+
+        console.error(
+            "Status update error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   EMERGENCY ALERT
+========================================================= */
+
+let lastAlertTime = null;
+
+function updateEmergencyAlert(data) {
+
+    const alert = document.getElementById("emergencyAlert");
+    const message = document.getElementById("alertMessage");
+    const details = document.getElementById("alertDetails");
+
+    if (!alert) return;
+
+    if (data.alert_active) {
+
+        alert.hidden = false;
+        alert.classList.add("show");
+
+        if (message) {
+            message.innerText = data.alert_message ||
+                "Fall detected. Please check the person immediately.";
+        }
+
+        if (details) {
+            const person = data.alert_person ? `Person ${data.alert_person}` : "Detected person";
+            const confidence = Number(data.alert_confidence || 0).toFixed(1);
+            const time = data.alert_time || "--";
+            details.innerText = `${person} • Confidence: ${confidence}% • Time: ${time}`;
+        }
+
+        // Browser alert sound (in addition to the server-side alarm).
+        // Play only when a new alert arrives to avoid repeated sounds.
+        if (data.alert_time && data.alert_time !== lastAlertTime) {
+            lastAlertTime = data.alert_time;
+            playBrowserAlert();
+        }
+
+    } else {
+
+        alert.hidden = true;
+        alert.classList.remove("show");
+        lastAlertTime = null;
+    }
+}
+
+function playBrowserAlert() {
+
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+
+        const ctx = new AudioContext();
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+        oscillator.frequency.setValueAtTime(660, ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + 0.7);
+    } catch (error) {
+        console.log("Browser alert sound unavailable:", error);
+    }
+}
+
+async function acknowledgeEmergencyAlert() {
+
+    try {
+        const response = await fetch("/api/alerts/acknowledge", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not acknowledge alert.");
+        }
+
+        updateEmergencyAlert({alert_active: false});
+
+    } catch (error) {
+        console.error("Alert acknowledgement error:", error);
+    }
+}
+
+
+/* =========================================================
+   FALL STATUS
+========================================================= */
+
+function updateFallStatus(status) {
+
+    const element =
+        document.getElementById("fallStatus");
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    if (status === "FALL DETECTED") {
+
+        element.className =
+            "fall-status danger";
+
+
+        element.innerHTML = `
+
+            <div class="status-symbol">
+                !
+            </div>
+
+            <div>
+
+                <strong>
+                    FALL DETECTED
+                </strong>
+
+                <span>
+                    Emergency alert triggered
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    if (status === "POSSIBLE FALL") {
+
+        element.className =
+            "fall-status warning";
+
+
+        element.innerHTML = `
+
+            <div class="status-symbol">
+                !
+            </div>
+
+            <div>
+
+                <strong>
+                    POSSIBLE FALL
+                </strong>
+
+                <span>
+                    Monitoring movement
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    if (status === "ERROR") {
+
+        element.className =
+            "fall-status warning";
+
+
+        element.innerHTML = `
+
+            <div class="status-symbol">
+                !
+            </div>
+
+            <div>
+
+                <strong>
+                    SYSTEM ERROR
+                </strong>
+
+                <span>
+                    Check camera and AI model
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* NORMAL */
+
+    element.className =
+        "fall-status normal";
+
+
+    element.innerHTML = `
+
+        <div class="status-symbol">
+            ✓
+        </div>
+
+        <div>
+
+            <strong>
+                NORMAL
+            </strong>
+
+            <span>
+                No fall detected
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* =========================================================
+   FORMAT UPTIME
+========================================================= */
+
+function formatUptime(seconds) {
+
+    seconds =
+        Math.max(
+            0,
+            Math.floor(Number(seconds) || 0)
+        );
+
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+
+    const secs =
+        seconds % 60;
+
+
+    return (
+
+        String(hours).padStart(2, "0")
+
+        + ":"
+
+        + String(minutes).padStart(2, "0")
+
+        + ":"
+
+        + String(secs).padStart(2, "0")
+
+    );
+
+}
+
+
+
+/* =========================================================
+   CURRENT TIME
+========================================================= */
+
+async function updateTime() {
+
+    try {
+
+        const response =
+            await fetch("/api/time");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Time API returned " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const timeElement =
+            document.getElementById("time");
+
+
+        if (timeElement) {
+
+            timeElement.innerText =
+                data.time || "--";
+
+        }
+
+    }
+
+
+    catch(error) {
+
+        console.error(
+            "Time update error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   FALL EVENTS
+========================================================= */
+
+async function updateEvents() {
+
+    try {
+
+        const response =
+            await fetch("/api/events");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Events API returned " +
+                response.status
+            );
+
+        }
+
+
+        const events =
+            await response.json();
+
+
+        const eventCount =
+            document.getElementById("eventCount");
+
+
+        if (eventCount) {
+
+            eventCount.innerText =
+                events.length;
+
+        }
+
+
+        const container =
+            document.getElementById(
+                "eventsContainer"
+            );
+
+
+        if (!container) {
+
+            return;
+
+        }
+
+
+        /* No events */
+
+        if (
+            !Array.isArray(events)
+            ||
+            events.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="no-events">
+
+                    <div>
+                        ✓
+                    </div>
+
+                    <strong>
+                        No fall events detected
+                    </strong>
+
+                    <span>
+                        The system is continuously monitoring.
+                    </span>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* Clear old events */
+
+        container.innerHTML = "";
+
+
+        /* Display latest 10 events */
+
+        events
+            .slice(0, 10)
+            .forEach(function(event, index) {
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "event-item";
+
+
+                const encodedFilename =
+                    encodeURIComponent(
+                        event.filename
+                    );
+
+
+                item.innerHTML = `
+
+                    <div class="event-number">
+                        ${index + 1}
+                    </div>
+
+                    <div class="event-icon">
+                        🚨
+                    </div>
+
+                    <div class="event-details">
+
+                        <strong>
+                            Fall Event
+                        </strong>
+
+                        <span>
+                            ${event.time || "Unknown time"}
+                        </span>
+
+                    </div>
+
+                    <a
+                        class="evidence-button"
+                        href="/fall_events/${encodedFilename}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        View Evidence
+                    </a>
+
+                `;
+
+
+                container.appendChild(item);
+
+            });
+
+    }
+
+
+    catch(error) {
+
+        console.error(
+            "Events update error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+
+        /* Initial updates */
+
+        updateStatus();
+
+        updateTime();
+
+        updateEvents();
+
+
+        /* Automatic updates */
+
+        setInterval(
+            updateStatus,
+            1000
+        );
+
+
+        setInterval(
+            updateTime,
+            1000
+        );
+
+
+        setInterval(
+            updateEvents,
+            2000
+        );
+
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>
